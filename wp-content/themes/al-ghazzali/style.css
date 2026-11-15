@@ -1,0 +1,16 @@
+/*
+Theme Name: Al Ghazzali Institut
+Theme URI: https://cnx-solutions.fr
+Author: CNX Solutions
+Author URI: https://cnx-solutions.fr
+Description: Thème sur mesure de l'Al Ghazzali Institut : cours d'arabe en ligne par niveaux. Nécessite l'extension « Al Ghazzali Institut ». Rapide, accessible, animé avec sobriété et optimisé pour le référencement.
+Version: 1.0.0
+Requires at least: 6.6
+Tested up to: 7.1
+Requires PHP: 8.1
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: al-ghazzali
+*/
+
+/* Les styles vivent dans assets/css/ : critical.css (inline) et main.css (différé). */

@@ -1,0 +1,108 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": false,
+		"color": {
+			"custom": false,
+			"customGradient": false,
+			"defaultPalette": false,
+			"defaultGradients": false,
+			"defaultDuotone": false,
+			"palette": [
+				{ "slug": "ink", "color": "#0f2a2c", "name": "Encre" },
+				{ "slug": "primary", "color": "#0e5b4d", "name": "Émeraude" },
+				{ "slug": "primary-dark", "color": "#0a463b", "name": "Émeraude foncé" },
+				{ "slug": "primary-soft", "color": "#e6f1ed", "name": "Émeraude clair" },
+				{ "slug": "gold", "color": "#c99a3b", "name": "Or" },
+				{ "slug": "gold-dark", "color": "#7f5c1d", "name": "Or foncé" },
+				{ "slug": "gold-soft", "color": "#f5ead2", "name": "Or clair" },
+				{ "slug": "sand", "color": "#f5efe3", "name": "Sable" },
+				{ "slug": "ivory", "color": "#fcfaf6", "name": "Ivoire" },
+				{ "slug": "white", "color": "#ffffff", "name": "Blanc" },
+				{ "slug": "text", "color": "#1d2b2c", "name": "Texte" },
+				{ "slug": "muted", "color": "#55625f", "name": "Texte secondaire" },
+				{ "slug": "line", "color": "#e6ddcc", "name": "Filet" }
+			]
+		},
+		"typography": {
+			"customFontSize": false,
+			"defaultFontSizes": false,
+			"dropCap": false,
+			"fluid": true,
+			"fontFamilies": [
+				{
+					"slug": "serif",
+					"name": "Fraunces",
+					"fontFamily": "Fraunces, Georgia, 'Times New Roman', serif",
+					"fontFace": [
+						{
+							"fontFamily": "Fraunces",
+							"fontStyle": "normal",
+							"fontWeight": "300 900",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/fraunces-latin-wght-normal.woff2" ]
+						},
+						{
+							"fontFamily": "Fraunces",
+							"fontStyle": "italic",
+							"fontWeight": "300 900",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/fraunces-latin-wght-italic.woff2" ]
+						}
+					]
+				},
+				{
+					"slug": "sans",
+					"name": "Plus Jakarta Sans",
+					"fontFamily": "'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Plus Jakarta Sans",
+							"fontStyle": "normal",
+							"fontWeight": "200 800",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/plus-jakarta-sans-latin-wght-normal.woff2" ]
+						}
+					]
+				},
+				{
+					"slug": "arabic",
+					"name": "Amiri",
+					"fontFamily": "Amiri, 'Traditional Arabic', 'Noto Naskh Arabic', serif",
+					"fontFace": [
+						{
+							"fontFamily": "Amiri",
+							"fontStyle": "normal",
+							"fontWeight": "400",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/amiri-arabic-400-normal.woff2" ],
+							"unicodeRange": "U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC"
+						}
+					]
+				}
+			],
+			"fontSizes": [
+				{ "slug": "small", "name": "Petit", "size": "0.9375rem", "fluid": false },
+				{ "slug": "medium", "name": "Normal", "size": "1.0625rem", "fluid": false },
+				{ "slug": "large", "name": "Grand", "size": "1.375rem", "fluid": { "min": "1.25rem", "max": "1.5rem" } },
+				{ "slug": "x-large", "name": "Très grand", "size": "2rem", "fluid": { "min": "1.625rem", "max": "2.25rem" } },
+				{ "slug": "xx-large", "name": "Titre", "size": "3rem", "fluid": { "min": "2.25rem", "max": "3.5rem" } }
+			]
+		},
+		"shadow": {
+			"defaultPresets": false
+		},
+		"dimensions": {
+			"defaultAspectRatios": false
+		},
+		"layout": {
+			"contentSize": "760px",
+			"wideSize": "1200px"
+		},
+		"spacing": {
+			"defaultSpacingSizes": false,
+			"units": [ "px", "rem", "%", "vw" ]
+		}
+	}
+}

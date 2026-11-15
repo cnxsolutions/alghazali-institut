@@ -1,0 +1,22 @@
+/* Boîtes de saisie Al Ghazzali Institut : champs empilés et listes répétables. */
+
+.ag-box__intro { margin: 0 0 14px; color: #50575e; }
+
+.ag-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px 20px; }
+#side-sortables .ag-fields { grid-template-columns: 1fr; }
+.ag-field { min-width: 0; }
+.ag-field--textarea,
+.ag-field--repeater { grid-column: 1 / -1; }
+.ag-field__label { display: block; margin: 0 0 4px; font-weight: 600; }
+.ag-field--checkbox .ag-field__label { font-weight: 400; }
+.ag-field select { max-width: 100%; }
+.ag-field .description { margin: 4px 0 0; }
+
+.ag-repeater__rows { margin: 10px 0 12px; padding: 0; list-style: none; counter-reset: ag-row; }
+.ag-repeater__row { margin: 0 0 12px; padding: 12px 14px 14px; border: 1px solid #dcdcde; border-radius: 4px; background: #f6f7f7; counter-increment: ag-row; }
+.ag-repeater__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #dcdcde; }
+.ag-repeater__number::before { content: "#" counter(ag-row); font-weight: 600; }
+.ag-repeater__bar .button-link-delete { margin-left: auto; }
+.ag-repeater__row .ag-fields { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 14px; }
+.ag-repeater__row:first-child [data-ag-move="-1"],
+.ag-repeater__row:last-child [data-ag-move="1"] { visibility: hidden; }

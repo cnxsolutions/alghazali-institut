@@ -1,0 +1,21 @@
+# Liste blanche : seuls le thème, l'extension de l'institut et les outils sont versionnés.
+# WordPress core, wp-config.php (secrets), uploads, autres extensions et .htaccess restent hors dépôt.
+/*
+!/.gitignore
+!/.gitattributes
+!/tools/
+
+!/wp-content/
+/wp-content/*
+!/wp-content/themes/
+/wp-content/themes/*
+!/wp-content/themes/al-ghazzali/
+!/wp-content/plugins/
+/wp-content/plugins/*
+!/wp-content/plugins/al-ghazzali-institut/
+
+# Fichiers locaux
+.DS_Store
+Thumbs.db
+*.log
+/.graphify/

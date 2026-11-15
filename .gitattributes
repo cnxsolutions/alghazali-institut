@@ -1,0 +1,30 @@
+# Fins de ligne normalisées : LF dans le dépôt comme dans la copie de travail.
+#
+# Sans cette règle, git convertit en CRLF sur Windows au moment d'écrire les
+# fichiers, et la machine suivante voit des milliers de fichiers « modifiés »
+# sans qu'une seule ligne ait changé.
+* text=auto eol=lf
+
+# Binaires : aucune conversion, aucune tentative de fusion. Déclarés d'avance
+# plutôt que laissés à la détection automatique, qui peut se tromper sur un
+# fichier peu compressé et en corrompre les octets au commit.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.mo binary
+*.pdf binary
+*.zip binary
+*.mp4 binary
+*.webm binary
+
+# Sous-titres : du texte, en LF comme le reste.
+*.vtt text eol=lf
