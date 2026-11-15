@@ -9,7 +9,7 @@ noyau WordPress n'est jamais versionné : il est téléchargé à la constructio
 
 | Déclencheur | Effet |
 |---|---|
-| push sur `main` | tests, image `ghcr.io/cnxsolutions/alghazali-institut:sha-<7>`, mise en ligne sur alghazali-institut.com |
+| push sur `main` | tests, image `ghcr.io/cnxsolutions/alghazali-institut:sha-<7>`, mise en ligne sur alghazali-institut.fr |
 | Actions › Déploiement › *Run workflow* | redéploie l'image de son choix : c'est le **retour arrière** |
 | idem, case « première installation » | une seule fois : installe WordPress et le contenu de départ sur la base vide |
 
@@ -120,9 +120,11 @@ dépôt, qui est public.
 VPS=<adresse du VPS>
 ```
 
-1. **Domaine** : acheter `alghazali-institut.com`, puis créer dans sa zone DNS deux enregistrements A, `@` et `www`,
-   vers l'adresse du VPS (et AAAA si le VPS a une IPv6 servie par nginx). Les étapes 2 à 5 n'en dépendent pas :
-   seul le certificat (étape 6) attend que le DNS réponde.
+1. **DNS** : la zone de `alghazali-institut.fr` est chez Cloudflare. Y créer deux enregistrements A, `@` et `www`,
+   vers l'adresse du VPS, en **« DNS only » (nuage gris)**, comme madrasapp.com qui répond directement par l'adresse
+   du VPS : le certificat est celui de Let's Encrypt, posé par certbot sur le VPS, et le proxy de Cloudflare
+   s'interposerait avec le sien. Les étapes 2 à 5 n'en dépendent pas : seul le certificat (étape 6) attend que le
+   DNS réponde.
 
 2. **Clé SSH de la CI**, sur le poste. Elle est dédiée à ce dépôt : la révoquer ne coupe pas les autres applications.
 
@@ -164,15 +166,15 @@ VPS=<adresse du VPS>
 
    Puis **première installation** : Actions › Déploiement › *Run workflow*, branche `main`, case « première
    installation » cochée. WordPress s'installe en ligne de commande sur la base vide (compte `alghazali-admin`,
-   adresse `contact@alghazali-institut.com`, mot de passe aléatoire que personne ne voit), le contenu de départ est
+   adresse `contact@alghazali-institut.fr`, mot de passe aléatoire que personne ne voit), le contenu de départ est
    créé, et le site tourne sur le port 9007, vérifié par php-fpm.
 
-6. **Certificat**, en root sur le VPS, dès que `dig +short alghazali-institut.com` et `www` répondent l'adresse du
+6. **Certificat**, en root sur le VPS, dès que `dig +short alghazali-institut.fr` et `www` répondent l'adresse du
    VPS. certbot ajoute l'écoute 443 et la redirection HTTP → HTTPS au vhost, puis recharge nginx :
 
    ```bash
-   certbot --nginx -d alghazali-institut.com -d www.alghazali-institut.com --redirect
-   curl -s https://alghazali-institut.com/up
+   certbot --nginx -d alghazali-institut.fr -d www.alghazali-institut.fr --redirect
+   curl -s https://alghazali-institut.fr/up
    ```
 
    Les déploiements suivants vérifient alors le site par nginx en HTTPS, comme un visiteur.
@@ -183,7 +185,7 @@ VPS=<adresse du VPS>
    docker exec -it alghazali-site-fpm wp user update alghazali-admin --prompt=user_pass
    ```
 
-   Si l'adresse `contact@alghazali-institut.com` n'existe pas, mettre la vraie :
+   Si l'adresse `contact@alghazali-institut.fr` n'existe pas, mettre la vraie :
    `docker exec alghazali-site-fpm wp user update alghazali-admin --user_email=<adresse>` et
    `docker exec alghazali-site-fpm wp option update admin_email <adresse>`.
 
@@ -191,7 +193,7 @@ VPS=<adresse du VPS>
    événements, renseigner les liens de la plateforme élèves (Apparence › Personnaliser › Al Ghazzali Institut ›
    Plateforme élèves).
 
-9. **Google** : déclarer `https://alghazali-institut.com` dans la Search Console et y soumettre `/wp-sitemap.xml`.
+9. **Google** : déclarer `https://alghazali-institut.fr` dans la Search Console et y soumettre `/wp-sitemap.xml`.
 
 ## Courriel
 
@@ -201,7 +203,7 @@ de l'administration sont concernés (mot de passe oublié, alertes de WordPress)
 
 Pour brancher un SMTP, renseigner `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` et
 `SMTP_FROM` dans `/var/www/alghazali-site/.env` (en root). L'effet est immédiat. Expédier depuis une adresse
-`@alghazali-institut.com` impose d'abord d'ajouter dans la zone DNS du domaine les enregistrements SPF et DKIM du
+`@alghazali-institut.fr` impose d'abord d'ajouter dans la zone DNS du domaine les enregistrements SPF et DKIM du
 fournisseur.
 
 ## WP-CLI

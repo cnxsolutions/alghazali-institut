@@ -16,7 +16,7 @@
 # moindre doute : le VPS est partagé avec l'application Madrasapp,
 # madrasapp.com, cnx-solutions.fr, Remoraid, seo-engine et Sillonn.
 #
-# alghazali-institut.com est un domaine neuf : aucun vhost ne doit déjà le
+# alghazali-institut.fr arrive neuf sur ce VPS : aucun vhost ne doit déjà le
 # servir. Le vhost du site est activé en HTTP seul ; le certificat s'ajoute
 # avec certbot dès que le DNS du domaine pointe sur le VPS.
 #
@@ -38,7 +38,7 @@ CI_PUBKEY="${1:-}"
 APP=alghazali-site
 APP_UID=9007
 FPM_PORT=9007
-DOMAIN=alghazali-institut.com
+DOMAIN=alghazali-institut.fr
 HOST_DIR=/var/www/alghazali-site
 ENV_FILE=$HOST_DIR/.env
 APP_DIR=/opt/apps/$APP

@@ -36,7 +36,7 @@ RACINE="$(dirname "$ICI")"
 P="alghazali-fumee-$$"
 APP_UID=9007
 WWW_GID=33                      # www-data sous Debian et Ubuntu
-DOMAIN=alghazali-institut.com
+DOMAIN=alghazali-institut.fr
 THEME=/wp-content/themes/al-ghazzali
 MYSQL_IMAGE=mysql:8.0
 NGINX_IMAGE=nginx:1.24          # la version d'Ubuntu 24.04, image Debian (www-data = 33)

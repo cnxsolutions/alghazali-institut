@@ -1,7 +1,7 @@
 #!/bin/sh
 # Première installation de WordPress, en ligne de commande, sur une base VIDE.
 #
-#   installer.sh <adresse du site>      ex. installer.sh https://alghazali-institut.com
+#   installer.sh <adresse du site>      ex. installer.sh https://alghazali-institut.fr
 #
 # Lancé par deploy/deploy.sh (PREMIERE_INSTALLATION=1, voir
 # docs/deploiement.md) et par tests/fumee.sh, dans un conteneur de l'image : le
@@ -16,9 +16,9 @@
 # depuis l'administration, et plus rien ne le réécrit.
 set -eu
 
-URL="${1:?usage : installer.sh <adresse du site, ex. https://alghazali-institut.com>}"
+URL="${1:?usage : installer.sh <adresse du site, ex. https://alghazali-institut.fr>}"
 ADMIN=alghazali-admin
-ADMIN_EMAIL=contact@alghazali-institut.com
+ADMIN_EMAIL=contact@alghazali-institut.fr
 
 if wp core is-installed 2>/dev/null; then
     echo "[installer] WordPress est déjà installé : rien à faire."

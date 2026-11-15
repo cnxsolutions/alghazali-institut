@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Al Ghazzali Institut : alghazali-site (alghazali-institut.com)
+# Al Ghazzali Institut : alghazali-site (alghazali-institut.fr)
 #
 # Téléversé dans /opt/apps/alghazali-site/docker-compose.yml par la CI à chaque
 # déploiement (.github/workflows/deploy.yml), puis lancé par deploy.sh. Ne pas

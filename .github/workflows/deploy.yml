@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Déploiement : tests -> image sur GHCR -> le VPS tire l'image
 #
-#   push sur main      -> alghazali-institut.com, base sauvegardée puis schéma mis
+#   push sur main      -> alghazali-institut.fr, base sauvegardée puis schéma mis
 #                         à jour si l'image apporte un WordPress plus récent
 #   lancement manuel   -> l'image de son choix : c'est le RETOUR ARRIÈRE
 #                         (image_tag = la version précédente). Une seule fois,
@@ -155,7 +155,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    name: Déployer alghazali-institut.com
+    name: Déployer alghazali-institut.fr
     needs: [plan, build]
     # `!failure() && !cancelled()` : on déploie quand build a réussi OU a été
     # sauté parce que l'image existait déjà, mais jamais après un échec.
@@ -168,7 +168,7 @@ jobs:
       packages: read
     environment:
       name: production
-      url: https://alghazali-institut.com
+      url: https://alghazali-institut.fr
     env:
       DEPLOY_TAG: ${{ needs.plan.outputs.deploy_tag }}
       UPDATE_DB: ${{ needs.plan.outputs.update_db == 'true' && '1' || '0' }}
@@ -240,7 +240,7 @@ jobs:
           RESULTAT: ${{ job.status }}
         run: |
           {
-            echo "### Déploiement de alghazali-institut.com"
+            echo "### Déploiement de alghazali-institut.fr"
             echo ""
             echo "| | |"
             echo "|---|---|"
