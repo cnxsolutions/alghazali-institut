@@ -41,7 +41,7 @@ get_template_part(
 	array(
 		'title'  => $ag_seo['heading'] ?? '',
 		'lead'   => $ag_seo['lead'] ?? '',
-		'kicker' => __( 'Al Ghazzali Institut', 'al-ghazzali' ),
+		'kicker' => __( 'Al Ghazali Institut', 'al-ghazzali' ),
 	)
 );
 ?>

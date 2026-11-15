@@ -1,10 +1,10 @@
 <?php
 /**
- * Al Ghazzali Institut : amorçage du thème.
+ * Al Ghazali Institut : amorçage du thème.
  *
  * Ce fichier ne contient aucune logique : il charge l'autoloader et démarre les modules.
  * Les contenus (formations, équipe, emploi du temps, événements) viennent de l'extension
- * « Al Ghazzali Institut » ; le thème se charge de leur affichage et du référencement.
+ * « Al Ghazali Institut » ; le thème se charge de leur affichage et du référencement.
  *
  * @package AlGhazzali
  */

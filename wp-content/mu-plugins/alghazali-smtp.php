@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Al Ghazzali Institut — envoi des courriels
+ * Plugin Name: Al Ghazali Institut — envoi des courriels
  * Description: Envoie les courriels de WordPress par le serveur SMTP déclaré dans l'environnement (SMTP_*). Sans SMTP_HOST, ne change rien et journalise les échecs.
  * Version: 1.0.0
  * Author: CNX Solutions

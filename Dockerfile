@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Al Ghazzali Institut : image de production (php-fpm + noyau WordPress + notre
+# Al Ghazali Institut : image de production (php-fpm + noyau WordPress + notre
 # code)
 #
 # Même chaîne que cnx-solutions.fr et madrasapp.com : construite par la CI

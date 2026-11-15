@@ -1,5 +1,5 @@
 /**
- * Al Ghazzali Institut : interactions du site (JavaScript natif, sans dépendance).
+ * Al Ghazali Institut : interactions du site (JavaScript natif, sans dépendance).
  *
  * Chaque module est indépendant, ne fait rien si ses éléments sont absents
  * et respecte la préférence « mouvement réduit ». Les textes affichés viennent

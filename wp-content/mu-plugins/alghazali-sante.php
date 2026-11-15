@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Al Ghazzali Institut — point de santé
+ * Plugin Name: Al Ghazali Institut — point de santé
  * Description: Répond sur /up avec l'état de la base, de l'installation et des médias. Interrogé par deploy/deploy.sh après chaque mise en service.
  * Version: 1.0.0
  * Author: CNX Solutions

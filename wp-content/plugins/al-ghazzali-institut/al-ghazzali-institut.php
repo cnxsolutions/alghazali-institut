@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Al Ghazzali Institut
+ * Plugin Name:       Al Ghazali Institut
  * Description:       Contenus de l'institut gérés depuis l'administration : formations (niveaux, modalités, emploi du temps, tarifs, FAQ), équipe et événements.
  * Version:           1.0.0
  * Requires at least: 6.5

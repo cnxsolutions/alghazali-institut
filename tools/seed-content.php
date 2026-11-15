@@ -45,7 +45,7 @@ $faq_home = array(
 return array(
 
 	'options'       => array(
-		'blogname'               => 'Al Ghazzali Institut',
+		'blogname'               => 'Al Ghazali Institut',
 		'blogdescription'        => 'Institut de langue arabe : cours d’arabe en ligne par niveaux, classes hommes et femmes séparées.',
 		'WPLANG'                 => 'fr_FR',
 		'timezone_string'        => 'Europe/Paris',
@@ -87,11 +87,11 @@ return array(
 			'title'   => 'Accueil',
 			'excerpt' => '',
 			'meta'    => array(
-				SeoFields::TITLE       => 'Institut arabe : cours d’arabe en ligne | Al Ghazzali',
+				SeoFields::TITLE       => 'Institut arabe : cours d’arabe en ligne | Al Ghazali',
 				SeoFields::DESCRIPTION => 'Institut arabe en ligne : cours d’arabe par niveaux, en direct et en petits groupes, classes hommes et femmes séparées. Apprenez l’arabe facilement.',
 			),
 			'content' => ag_b_h2( 'Un institut arabe en ligne pour apprendre l’arabe pas à pas' )
-				. ag_b_p( 'Al Ghazzali Institut est un <strong>institut de langue arabe</strong> qui accompagne les francophones dans l’apprentissage de l’arabe, de la première lettre jusqu’à la lecture de textes authentiques. Nos <strong>cours d’arabe en ligne</strong> se déroulent en direct, en petits groupes, avec des enseignants qui suivent chaque élève.' )
+				. ag_b_p( 'Al Ghazali Institut est un <strong>institut de langue arabe</strong> qui accompagne les francophones dans l’apprentissage de l’arabe, de la première lettre jusqu’à la lecture de textes authentiques. Nos <strong>cours d’arabe en ligne</strong> se déroulent en direct, en petits groupes, avec des enseignants qui suivent chaque élève.' )
 				. ag_b_p( 'Le parcours est découpé en niveaux : lecture et écriture, vocabulaire, grammaire, compréhension, puis expression écrite et orale. Chaque niveau propose des classes séparées pour les hommes et pour les femmes, à des horaires différents.' )
 				. ag_b_h2( 'Pourquoi choisir notre institut ?' )
 				. ag_b_list(
@@ -108,16 +108,16 @@ return array(
 		),
 
 		'institut'                   => array(
-			'title'   => 'L’institut Al Ghazzali',
+			'title'   => 'L’institut Al Ghazali',
 			'order'   => 1,
 			'excerpt' => 'Un institut de langue arabe qui enseigne l’arabe aux francophones avec rigueur, clarté et bienveillance, par niveaux et en classes séparées pour hommes et femmes.',
 			'meta'    => array(
-				SeoFields::TITLE       => 'Institut arabe Al Ghazzali : notre mission et nos valeurs',
-				SeoFields::DESCRIPTION => 'Découvrez l’institut arabe Al Ghazzali : sa mission, ses valeurs et sa méthode pour enseigner la langue arabe aux francophones, par niveaux et en direct.',
+				SeoFields::TITLE       => 'Institut arabe Al Ghazali : notre mission et nos valeurs',
+				SeoFields::DESCRIPTION => 'Découvrez l’institut arabe Al Ghazali : sa mission, ses valeurs et sa méthode pour enseigner la langue arabe aux francophones, par niveaux et en direct.',
 			),
 			'content' => ag_b_h2( 'Notre mission' )
 				. ag_b_p( 'Rendre la langue arabe accessible à chaque francophone. Nous sommes convaincus qu’on peut apprendre l’arabe à tout âge, à condition d’être bien guidé : une méthode claire, des objectifs précis à chaque niveau et des enseignants disponibles.' )
-				. ag_b_h2( 'Pourquoi « Al Ghazzali » ?' )
+				. ag_b_h2( 'Pourquoi « Al Ghazali » ?' )
 				. ag_b_p( 'Notre institut porte le nom d’Abû Hâmid al-Ghazâlî (1058-1111), qui enseigna à la Nizâmiyya de Bagdad, l’une des grandes écoles de son époque. Nous retenons de lui une exigence de pédagogue : expliquer avec clarté, avancer avec méthode et faire de chaque leçon un vrai progrès.' )
 				. ag_b_h2( 'Nos valeurs' )
 				. ag_b_list(
@@ -140,7 +140,7 @@ return array(
 			'template' => 'page-templates/landing.php',
 			'excerpt'  => 'Des cours d’arabe en ligne en direct, en petits groupes, avec des classes séparées pour hommes et femmes : de l’alphabet à la compréhension des textes.',
 			'meta'     => array(
-				SeoFields::TITLE       => 'Cours d’arabe en ligne en direct | Al Ghazzali Institut',
+				SeoFields::TITLE       => 'Cours d’arabe en ligne en direct | Al Ghazali Institut',
 				SeoFields::DESCRIPTION => 'Cours d’arabe en ligne en direct : petits groupes, parcours par niveaux, classes hommes et femmes séparées. Lisez, écrivez et comprenez l’arabe pas à pas.',
 			),
 			'content'  => ag_b_h2( 'Apprendre l’arabe en ligne, avec un vrai enseignant' )
@@ -240,7 +240,7 @@ return array(
 			'template' => 'page-templates/schedule.php',
 			'excerpt'  => 'Les horaires de toutes nos classes d’arabe, jour par jour. Filtrez par formation et par classe (hommes ou femmes) pour trouver votre créneau.',
 			'meta'     => array(
-				SeoFields::TITLE       => 'Emploi du temps des cours d’arabe | Al Ghazzali Institut',
+				SeoFields::TITLE       => 'Emploi du temps des cours d’arabe | Al Ghazali Institut',
 				SeoFields::DESCRIPTION => 'Consultez l’emploi du temps de nos cours d’arabe en ligne, jour par jour : niveaux, horaires et classes séparées pour hommes et femmes.',
 			),
 			'content'  => ag_b_p( 'Les horaires sont indiqués à l’heure de Paris. Chaque fiche formation détaille le programme de ses niveaux.' ),
@@ -252,8 +252,8 @@ return array(
 			'template' => 'page-templates/contact.php',
 			'excerpt'  => 'Une question sur nos formations, votre niveau ou l’organisation des cours ? Écrivez-nous : nous vous répondons et vous orientons vers le groupe adapté.',
 			'meta'     => array(
-				SeoFields::TITLE       => 'Contact : Al Ghazzali Institut',
-				SeoFields::DESCRIPTION => 'Contactez Al Ghazzali Institut pour toute question sur nos cours d’arabe en ligne : niveaux, horaires, classes hommes et femmes. Nous vous orientons.',
+				SeoFields::TITLE       => 'Contact : Al Ghazali Institut',
+				SeoFields::DESCRIPTION => 'Contactez Al Ghazali Institut pour toute question sur nos cours d’arabe en ligne : niveaux, horaires, classes hommes et femmes. Nous vous orientons.',
 			),
 			'content'  => ag_b_h2( 'Nous vous orientons' )
 				. ag_b_p( 'Indiquez-nous votre niveau actuel, votre objectif (lire, comprendre, parler) et vos disponibilités, en précisant si vous souhaitez rejoindre une classe hommes ou une classe femmes : nous vous proposerons le groupe le plus adapté.' ),
@@ -264,7 +264,7 @@ return array(
 			'order'   => 4,
 			'excerpt' => 'Conseils et méthodes pour apprendre l’arabe facilement, progresser niveau après niveau et bien choisir ses cours.',
 			'meta'    => array(
-				SeoFields::TITLE       => 'Blog : conseils pour apprendre l’arabe | Al Ghazzali',
+				SeoFields::TITLE       => 'Blog : conseils pour apprendre l’arabe | Al Ghazali',
 				SeoFields::DESCRIPTION => 'Nos conseils pour apprendre l’arabe facilement : alphabet, méthode, choix des cours et progression par niveaux.',
 			),
 			'content' => '',
@@ -464,7 +464,7 @@ return array(
 						'answer'   => 'Oui, dans la limite des places disponibles, vers un autre créneau du même niveau et de la même classe.',
 					),
 				),
-				SeoFields::TITLE       => 'Cours d’arabe littéraire en ligne, 5 niveaux | Al Ghazzali',
+				SeoFields::TITLE       => 'Cours d’arabe littéraire en ligne, 5 niveaux | Al Ghazali',
 				SeoFields::DESCRIPTION => 'Cours d’arabe littéraire en ligne : 5 niveaux, de l’alphabet aux textes authentiques. En direct, en petits groupes, classes hommes et femmes séparées.',
 			),
 			'content' => ag_b_h2( 'Pourquoi apprendre l’arabe littéraire ?' )
@@ -566,7 +566,7 @@ return array(
 						'answer'   => 'Oui, c’est même recommandé : l’oral renforce le vocabulaire et la grammaire vus dans le parcours écrit.',
 					),
 				),
-				SeoFields::TITLE       => 'Cours d’arabe oral en ligne : conversation | Al Ghazzali',
+				SeoFields::TITLE       => 'Cours d’arabe oral en ligne : conversation | Al Ghazali',
 				SeoFields::DESCRIPTION => 'Parlez arabe avec nos cours de conversation en ligne : séances menées en arabe, 3 niveaux, petits groupes, classes hommes et femmes séparées.',
 			),
 			'content' => ag_b_h2( 'Apprendre à parler arabe' )
