@@ -1,10 +1,13 @@
 <?php
 /**
- * Contenu de départ LOCAL : réglages, équipe, formations, pages, articles, menus.
+ * Contenu de départ : réglages, équipe, formations, pages, articles, menus.
  *
- * Usage : php tools/seed.php [hôte] [--force]
+ * Sur le poste : php tools/seed.php [hôte] [--force]
  * Sans --force, un contenu existant (même slug) n'est jamais écrasé.
  * Active l'extension « Al Ghazzali Institut » si besoin et retire les contenus des versions précédentes.
+ *
+ * En production, une seule fois, par docker/installer.sh sur une base vierge :
+ * AG_PREMIERE_INSTALLATION=1 wp eval-file tools/seed.php (jamais de --force).
  *
  * @package AlGhazzali
  */
@@ -18,18 +21,31 @@ if ( 'cli' !== PHP_SAPI ) {
 	exit( 1 );
 }
 
-$ag_args  = array_slice( $argv, 1 );
-$ag_force = in_array( '--force', $ag_args, true );
-$ag_host  = current( array_diff( $ag_args, array( '--force' ) ) );
+// `wp eval-file` inclut ce fichier dans une fonction : sans cette ligne, $wpdb y serait indéfini.
+global $wpdb;
 
-$_SERVER['HTTP_HOST']   = $ag_host ? $ag_host : 'alghazzali.localhost';
-$_SERVER['REQUEST_URI'] = '/';
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	// Relancé sur un site en service, ce script réécrirait les réglages et les menus que l'institut a modifiés :
+	// sous WP-CLI, il ne sert qu'à la première installation, qui le demande explicitement.
+	if ( '1' !== getenv( 'AG_PREMIERE_INSTALLATION' ) ) {
+		fwrite( STDERR, "Refusé : sous WP-CLI, ce script ne sert qu'à la première installation (docker/installer.sh).\n" );
+		exit( 1 );
+	}
+	$ag_force = false;
+} else {
+	$ag_args  = array_slice( $argv, 1 );
+	$ag_force = in_array( '--force', $ag_args, true );
+	$ag_host  = current( array_diff( $ag_args, array( '--force' ) ) );
 
-require dirname( __DIR__ ) . '/wp-load.php';
+	$_SERVER['HTTP_HOST']   = $ag_host ? $ag_host : 'alghazzali.localhost';
+	$_SERVER['REQUEST_URI'] = '/';
 
-if ( 'local' !== wp_get_environment_type() ) {
-	fwrite( STDERR, "Refusé : WP_ENVIRONMENT_TYPE doit valoir « local ».\n" );
-	exit( 1 );
+	require dirname( __DIR__ ) . '/wp-load.php';
+
+	if ( 'local' !== wp_get_environment_type() ) {
+		fwrite( STDERR, "Refusé : WP_ENVIRONMENT_TYPE doit valoir « local ».\n" );
+		exit( 1 );
+	}
 }
 
 if ( ! defined( 'AG_CORE_VERSION' ) ) {
@@ -342,8 +358,9 @@ set_theme_mod(
 echo "Permaliens\n";
 flush_rewrite_rules( false );
 
+// Pour l'Apache du poste seulement : en production, nginx ne lit pas de .htaccess et le code est en lecture seule.
 $ag_htaccess = ABSPATH . '.htaccess';
-if ( ! file_exists( $ag_htaccess ) ) {
+if ( 'local' === wp_get_environment_type() && ! file_exists( $ag_htaccess ) ) {
 	file_put_contents( // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- outil CLI local.
 		$ag_htaccess,
 		"# BEGIN WordPress\n<IfModule mod_rewrite.c>\nRewriteEngine On\nRewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]\nRewriteBase /\nRewriteRule ^index\\.php$ - [L]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule . /index.php [L]\n</IfModule>\n# END WordPress\n"

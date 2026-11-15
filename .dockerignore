@@ -1,0 +1,37 @@
+# Liste blanche, comme le .gitignore, et pour la même raison : ce dossier est
+# aussi la racine du WordPress de développement (Laragon). On y trouve le noyau,
+# les médias, le wp-config.php local avec ses accès à la base, un debug.log…
+# Une liste noire oublierait tôt ou tard un fichier sensible ; un secret copié
+# dans une couche d'image y reste, même supprimé ensuite.
+#
+# La CI construit depuis un clone, où ces fichiers n'existent pas ; cette liste
+# garantit qu'une construction locale contient exactement la même chose.
+
+# Tout est exclu.
+*
+
+# Sauf ce que le Dockerfile copie. Les mu-plugins et les outils un par un :
+# install-local.php ne sert que sur le poste.
+!docker/
+!wp-content/themes/al-ghazzali/
+!wp-content/plugins/al-ghazzali-institut/
+!wp-content/mu-plugins/
+wp-content/mu-plugins/*
+!wp-content/mu-plugins/alghazali-sante.php
+!wp-content/mu-plugins/alghazali-smtp.php
+!tools/seed.php
+!tools/seed-blocks.php
+!tools/seed-content.php
+
+# Deuxième garde, à l'intérieur des chemins autorisés.
+**/.env
+**/.env.*
+**/*.key
+**/*.pem
+**/*.sql
+**/*.sql.gz
+**/*.log
+**/node_modules
+**/.DS_Store
+**/Thumbs.db
+**/desktop.ini
