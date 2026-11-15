@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# Al Ghazzali Institut : préparation du VPS au déploiement par image (UNE fois, en root)
+# Al Ghazali Institut : préparation du VPS au déploiement par image (UNE fois, en root)
 #
 #   ssh root@<vps> mkdir -p /root/alghazali-bootstrap
 #   scp deploy/bootstrap-vps.sh deploy/nginx-alghazali-site.conf root@<vps>:/root/alghazali-bootstrap/

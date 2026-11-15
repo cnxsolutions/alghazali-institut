@@ -1,6 +1,6 @@
 <?php
 /**
- * Extension « Al Ghazzali Institut » absente : le site se met en pause proprement (503) au lieu de casser.
+ * Extension « Al Ghazali Institut » absente : le site se met en pause proprement (503) au lieu de casser.
  *
  * @package AlGhazzali
  */
@@ -24,7 +24,7 @@ final class MissingCore implements Hookable {
 		}
 		printf(
 			'<div class="notice notice-error"><p>%1$s <a href="%2$s">%3$s</a></p></div>',
-			esc_html__( 'Le thème Al Ghazzali a besoin de l’extension « Al Ghazzali Institut » (formations, équipe, emploi du temps). Le site est en maintenance tant qu’elle est désactivée.', 'al-ghazzali' ),
+			esc_html__( 'Le thème Al Ghazali a besoin de l’extension « Al Ghazali Institut » (formations, équipe, emploi du temps). Le site est en maintenance tant qu’elle est désactivée.', 'al-ghazzali' ),
 			esc_url( admin_url( 'plugins.php' ) ),
 			esc_html__( 'Activer l’extension', 'al-ghazzali' )
 		);

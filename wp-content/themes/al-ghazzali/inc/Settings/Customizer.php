@@ -1,6 +1,6 @@
 <?php
 /**
- * Panneau « Al Ghazzali Institut » du Customizer, généré depuis Institute::settings().
+ * Panneau « Al Ghazali Institut » du Customizer, généré depuis Institute::settings().
  *
  * @package AlGhazzali
  */
@@ -23,7 +23,7 @@ final class Customizer implements Hookable {
 		$wp_customize->add_panel(
 			self::PANEL,
 			array(
-				'title'    => __( 'Al Ghazzali Institut', 'al-ghazzali' ),
+				'title'    => __( 'Al Ghazali Institut', 'al-ghazzali' ),
 				'priority' => 30,
 			)
 		);

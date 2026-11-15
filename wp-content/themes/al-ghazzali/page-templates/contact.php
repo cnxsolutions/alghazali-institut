@@ -54,7 +54,7 @@ while ( have_posts() ) :
 					<?php endforeach; ?>
 				</ul>
 			<?php elseif ( current_user_can( 'customize' ) ) : ?>
-				<p class="notice"><?php esc_html_e( 'Renseignez vos coordonnées dans Apparence › Personnaliser › Al Ghazzali Institut › Coordonnées.', 'al-ghazzali' ); ?></p>
+				<p class="notice"><?php esc_html_e( 'Renseignez vos coordonnées dans Apparence › Personnaliser › Al Ghazali Institut › Coordonnées.', 'al-ghazzali' ); ?></p>
 			<?php endif; ?>
 
 			<?php if ( '' !== $ag_institute->get( 'hours' ) ) : ?>

@@ -190,7 +190,7 @@ VPS=<adresse du VPS>
    `docker exec alghazali-site-fpm wp option update admin_email <adresse>`.
 
 8. **Contenu** : relire dans l'administration les formations (horaires, rythmes, niveaux), publier l'équipe et les
-   événements, renseigner les liens de la plateforme élèves (Apparence › Personnaliser › Al Ghazzali Institut ›
+   événements, renseigner les liens de la plateforme élèves (Apparence › Personnaliser › Al Ghazali Institut ›
    Plateforme élèves).
 
 9. **Google** : déclarer `https://alghazali-institut.fr` dans la Search Console et y soumettre `/wp-sitemap.xml`.

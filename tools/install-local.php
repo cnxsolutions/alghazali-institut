@@ -30,7 +30,7 @@ if ( 'local' !== wp_get_environment_type() ) {
 
 if ( ! is_blog_installed() ) {
 	$password = wp_generate_password( 20, true, false );
-	$result   = wp_install( 'Al Ghazzali Institut', 'cnx-admin', 'admin@alghazzali.localhost', true, '', $password, 'fr_FR' );
+	$result   = wp_install( 'Al Ghazali Institut', 'cnx-admin', 'admin@alghazzali.localhost', true, '', $password, 'fr_FR' );
 	echo "WordPress installé.\nIdentifiant : cnx-admin\nMot de passe : {$password}\n";
 	if ( empty( $result['user_id'] ) ) {
 		fwrite( STDERR, "Échec de l'installation.\n" );

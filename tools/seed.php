@@ -4,7 +4,7 @@
  *
  * Sur le poste : php tools/seed.php [hôte] [--force]
  * Sans --force, un contenu existant (même slug) n'est jamais écrasé.
- * Active l'extension « Al Ghazzali Institut » si besoin et retire les contenus des versions précédentes.
+ * Active l'extension « Al Ghazali Institut » si besoin et retire les contenus des versions précédentes.
  *
  * En production, une seule fois, par docker/installer.sh sur une base vierge :
  * AG_PREMIERE_INSTALLATION=1 wp eval-file tools/seed.php (jamais de --force).
@@ -57,7 +57,7 @@ if ( ! defined( 'AG_CORE_VERSION' ) ) {
 	}
 	// « init » est déjà passé dans ce processus : types de contenu et groupes enregistrés à la main.
 	Plugin::activate();
-	echo "Extension « Al Ghazzali Institut » activée\n";
+	echo "Extension « Al Ghazali Institut » activée\n";
 }
 
 // Administrateur courant : nécessaire pour enregistrer le balisage des blocs (lang, dir) sans filtrage.
@@ -74,8 +74,8 @@ wp_set_current_user( (int) ( $ag_admins[0] ?? 0 ) );
 wp_update_user(
 	array(
 		'ID'           => (int) ( $ag_admins[0] ?? 0 ),
-		'display_name' => 'Équipe Al Ghazzali',
-		'nickname'     => 'Équipe Al Ghazzali',
+		'display_name' => 'Équipe Al Ghazali',
+		'nickname'     => 'Équipe Al Ghazali',
 	)
 );
 

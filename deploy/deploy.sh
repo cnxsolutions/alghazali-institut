@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# Al Ghazzali Institut : script de déploiement, exécuté SUR LE VPS
+# Al Ghazali Institut : script de déploiement, exécuté SUR LE VPS
 #
 # Téléversé dans /opt/apps/alghazali-site/ à chaque passage de la CI, puis lancé
 # par .github/workflows/deploy.yml. Il se lance aussi à la main (en tant que

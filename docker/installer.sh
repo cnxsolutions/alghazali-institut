@@ -39,7 +39,7 @@ fi
 # terminal ni dans le journal de la CI. Il est de toute façon remplacé plus
 # bas par un autre, que personne ne voit : le vrai se définit ensuite avec
 # `wp user update alghazali-admin --prompt=user_pass` (docs/deploiement.md).
-wp core install --url="$URL" --title="Al Ghazzali Institut" --admin_user="$ADMIN" \
+wp core install --url="$URL" --title="Al Ghazali Institut" --admin_user="$ADMIN" \
     --admin_email="$ADMIN_EMAIL" --locale=fr_FR --skip-email >/dev/null
 # shellcheck disable=SC2016  # code PHP
 wp eval 'wp_set_password( wp_generate_password( 40, true, true ), get_user_by( "login", "'"$ADMIN"'" )->ID );'
