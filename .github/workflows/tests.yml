@@ -1,0 +1,154 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Tests : syntaxe et style, puis test de fumée de l'image
+#
+# Appelé par deploy.yml avant de construire l'image (workflow_call) : une image
+# n'est publiée que si ces deux jobs sont verts. Tourne aussi seul sur les
+# branches de travail et les pull requests.
+#
+# Il n'y a pas d'environnement de dev : un push sur main met en ligne. Ces
+# tests sont le SEUL garde-fou, d'où le test de fumée, qui démarre l'image pour
+# de vrai derrière nginx et MySQL avant toute publication.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Tests
+
+on:
+  # main n'est pas listé : sur main, ces tests tournent via deploy.yml, qui les
+  # appelle avant de construire l'image. Les lister ici les jouerait deux fois.
+  workflow_call:
+  # Les branches de travail sont testées par leur pull request, et seulement
+  # par elle : un déclencheur « push » en plus jouait chaque envoi deux fois
+  # (deux constructions d'image, deux tests de fumée), au risque d'épuiser le
+  # quota de minutes du dépôt, dont dépendent aussi les déploiements. Pour
+  # tester une branche, ouvrir une pull request (en brouillon au besoin).
+  pull_request:
+
+# Un nouvel envoi sur une pull request annule ses tests devenus obsolètes.
+# Jamais quand deploy.yml appelle ces tests : l'événement est alors celui du
+# déploiement, et un déploiement ne s'interrompt pas.
+concurrency:
+  group: tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  # Celle du Dockerfile : on teste la version de PHP qui tournera.
+  PHP_VERSION: '8.3'
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # SYNTAXE ET STYLE
+  #
+  #   BLOQUANT   php -l sur tout le PHP versionné ; ShellCheck sur les
+  #              scripts ; actionlint sur les workflows. Le dépôt est à zéro
+  #              erreur partout, on peut l'exiger sans dette à rembourser.
+  #
+  #   INDICATIF  PHPCS (WordPress Coding Standards), sur les seuls fichiers
+  #              modifiés. Il remonte en annotations sans bloquer : le thème
+  #              suit ces règles, mais un avertissement de style ne doit pas
+  #              retenir un correctif en production.
+  # ---------------------------------------------------------------------------
+  syntaxe:
+    name: Syntaxe et style
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # PHPCS a besoin de l'historique pour comparer à la base.
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+
+      # `git ls-files` : seulement ce qui est versionné, comme dans l'image.
+      - name: Syntaxe PHP (bloquant)
+        run: |
+          set -euo pipefail
+          erreurs=0
+          while IFS= read -r -d '' f; do
+            if ! sortie="$(php -l "$f" 2>&1)"; then
+              echo "$sortie"
+              erreurs=$((erreurs + 1))
+            fi
+          done < <(git ls-files -z -- '*.php')
+          echo "$(git ls-files -- '*.php' | wc -l) fichiers PHP, $erreurs en erreur"
+          [[ "$erreurs" == 0 ]]
+
+      # Préinstallé sur les runners Ubuntu.
+      - name: ShellCheck (bloquant)
+        run: git ls-files -z -- '*.sh' | xargs -0 shellcheck -x
+
+      - name: actionlint (bloquant)
+        run: |
+          docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12 -color
+
+      - name: Fichiers modifiés
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT" == pull_request ]]; then
+            BASE="origin/$BASE_REF"
+          elif [[ "$EVENT" == push && -n "$BEFORE" && "$BEFORE" != 0000000000000000000000000000000000000000 ]]; then
+            BASE="$BEFORE"
+          else
+            # Premier push d'une branche, appel depuis deploy.yml : pas de base
+            # exploitable. On ne juge rien plutôt que de tout juger.
+            BASE=""
+          fi
+          : > changed_php.txt
+          if [[ -z "$BASE" ]]; then
+            echo "Aucune base de comparaison : PHPCS ignoré pour ce passage."
+          else
+            git diff --name-only --diff-filter=ACMR "$BASE"...HEAD -- '*.php' > changed_php.txt || true
+          fi
+          echo "PHP : $(wc -l < changed_php.txt) fichier(s) modifié(s)"
+
+      - name: PHPCS sur les fichiers modifiés (indicatif)
+        run: |
+          set -uo pipefail
+          if [[ ! -s changed_php.txt ]]; then
+            echo "Aucun fichier PHP modifié."
+            exit 0
+          fi
+          composer global config --no-interaction allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer global require --no-interaction --quiet wp-coding-standards/wpcs:^3
+          xargs -r -a changed_php.txt "$(composer global config bin-dir --absolute 2>/dev/null)/phpcs" \
+            --standard=WordPress --extensions=php -s --ignore='*/docs/*' || \
+            echo "::warning::PHPCS signale des écarts aux WordPress Coding Standards sur les fichiers modifiés (non bloquant)."
+
+  # ---------------------------------------------------------------------------
+  # TEST DE FUMÉE
+  #
+  # L'image est construite, puis démarrée comme sur le VPS (tests/fumee.sh) :
+  # MySQL 8 par le socket, uid 9007 en lecture seule, copie publique, nginx
+  # avec le vhost de production. WordPress s'installe, l'accueil et /up
+  # répondent 200, le contenu de départ est créé puis chaque page rendue par nginx,
+  # un téléversement arrive dans uploads/ avec le groupe www-data, les
+  # fichiers interdits le restent.
+  #
+  # Le cache de construction est partagé avec deploy.yml : l'image publiée
+  # ensuite réutilise les couches construites ici.
+  # ---------------------------------------------------------------------------
+  fumee:
+    name: Test de fumée de l'image
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: alghazali-site:fumee
+          build-args: APP_VERSION=fumee
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - run: bash tests/fumee.sh alghazali-site:fumee

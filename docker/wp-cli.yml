@@ -1,0 +1,3 @@
+# Lu par WP-CLI depuis /var/www/app, le working_dir des conteneurs : le noyau
+# est dans public/, wp-config.php un niveau au-dessus (voir le Dockerfile).
+path: public

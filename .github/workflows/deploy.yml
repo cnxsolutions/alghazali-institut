@@ -1,0 +1,255 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Déploiement : tests -> image sur GHCR -> le VPS tire l'image
+#
+#   push sur main      -> alghazali-institut.fr, base sauvegardée puis schéma mis
+#                         à jour si l'image apporte un WordPress plus récent
+#   lancement manuel   -> l'image de son choix : c'est le RETOUR ARRIÈRE
+#                         (image_tag = la version précédente). Une seule fois,
+#                         avec « première installation » cochée : WordPress
+#                         s'installe sur la base vide avec le contenu de départ
+#                         (docs/deploiement.md)
+#
+# UN SEUL ENVIRONNEMENT : main = production. Ni dev, ni tag de version. Même
+# chaîne que cnx-solutions.fr et madrasapp.com : un push sur main met en ligne
+# sans clic. Les tests (tests.yml, test de fumée compris) sont le seul
+# garde-fou.
+#
+# LE VPS NE CONSTRUIT RIEN. Il n'a ni clone git, ni composer, ni node : ce qui
+# tourne est exactement l'image que la CI a testée. Le noyau WordPress est
+# dans l'image, à la version épinglée dans le Dockerfile.
+#
+# SECRETS DE DÉPÔT (Settings > Secrets and variables > Actions), même hôte et
+# même utilisateur `deploy` que les autres applications du VPS, mais une clé
+# SSH dédiée à ce dépôt.
+#   VPS_HOST         adresse IP du VPS
+#   VPS_USER         deploy
+#   VPS_SSH_KEY      clé PRIVÉE dédiée, générée sur le poste, en entier
+#   VPS_KNOWN_HOSTS  sortie de `ssh-keyscan -t ed25519 <VPS_HOST>`, empreinte vérifiée
+# docs/deploiement.md donne les commandes.
+#
+# Aucun secret applicatif ne transite par GitHub : ils vivent dans le .env du VPS.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Déploiement
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image à déployer (ex. sha-a1b2c3d). Vide : le commit choisi."
+        type: string
+        required: false
+      update_db:
+        description: "Sauvegarder la base, puis mettre à jour son schéma si l'image est plus récente (sans effet sur un retour arrière)"
+        type: boolean
+        default: true
+      premiere_installation:
+        description: "Première installation : installer WordPress si la base est vide (une seule fois, à la mise en ligne)"
+        type: boolean
+        default: false
+
+# Un déploiement à la fois, et on n'en interrompt JAMAIS un en vol : un
+# `docker compose up` coupé laisserait le site à moitié basculé.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  # GHCR exige un nom d'image en minuscules. Écrit en dur plutôt que dérivé de
+  # github.repository à chaque job.
+  IMAGE: ghcr.io/cnxsolutions/alghazali-institut
+
+jobs:
+  # Quelle image, faut-il la construire, faut-il toucher à la base ? Tout est
+  # décidé ici, une fois, pour que les jobs suivants n'aient aucune logique
+  # conditionnelle.
+  plan:
+    name: Préparer
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      sha_tag: ${{ steps.p.outputs.sha_tag }}
+      deploy_tag: ${{ steps.p.outputs.deploy_tag }}
+      build: ${{ steps.p.outputs.build }}
+      update_db: ${{ steps.p.outputs.update_db }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: p
+        env:
+          EVENT: ${{ github.event_name }}
+          IN_TAG: ${{ inputs.image_tag }}
+          IN_UPDATE_DB: ${{ inputs.update_db }}
+        run: |
+          set -euo pipefail
+          sha_tag="sha-$(git rev-parse --short=7 HEAD)"
+
+          if [[ "$EVENT" == workflow_dispatch ]]; then
+            deploy_tag="${IN_TAG:-$sha_tag}"; update_db="$IN_UPDATE_DB"
+          else
+            deploy_tag="$sha_tag"; update_db=true
+          fi
+
+          # Un push construit toujours. Un lancement manuel sans image_tag ne
+          # construit que si l'image du commit manque. Avec image_tag, il ne
+          # construit jamais : il redéploie une image existante, c'est tout
+          # l'intérêt d'un retour arrière.
+          build=false
+          if [[ "$EVENT" == push ]]; then
+            build=true
+          elif [[ -z "$IN_TAG" ]]; then
+            docker manifest inspect "$IMAGE:$sha_tag" >/dev/null 2>&1 || build=true
+          elif ! docker manifest inspect "$IMAGE:$deploy_tag" >/dev/null 2>&1; then
+            echo "::error::L'image $IMAGE:$deploy_tag n'existe pas sur GHCR."
+            exit 1
+          fi
+
+          {
+            echo "sha_tag=$sha_tag"; echo "deploy_tag=$deploy_tag"
+            echo "build=$build"; echo "update_db=$update_db"
+          } | tee -a "$GITHUB_OUTPUT"
+
+  quality:
+    name: Tests
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
+    uses: ./.github/workflows/tests.yml
+
+  build:
+    name: Publier l'image sur GHCR
+    needs: [plan, quality]
+    if: needs.plan.outputs.build == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # Le tag porte le SHA court : chaque image reste attribuable à un commit.
+      # `latest` suit main pour le confort, mais n'est JAMAIS ce que le VPS
+      # déploie : un tag mouvant rend un retour arrière ininterprétable.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          build-args: APP_VERSION=${{ needs.plan.outputs.sha_tag }}
+          tags: |
+            ${{ env.IMAGE }}:${{ needs.plan.outputs.sha_tag }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Déployer alghazali-institut.fr
+    needs: [plan, build]
+    # `!failure() && !cancelled()` : on déploie quand build a réussi OU a été
+    # sauté parce que l'image existait déjà, mais jamais après un échec.
+    if: ${{ !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Lecture seule : ce jeton est transmis au VPS pour tirer l'image.
+    permissions:
+      contents: read
+      packages: read
+    environment:
+      name: production
+      url: https://alghazali-institut.fr
+    env:
+      DEPLOY_TAG: ${{ needs.plan.outputs.deploy_tag }}
+      UPDATE_DB: ${{ needs.plan.outputs.update_db == 'true' && '1' || '0' }}
+      # Seulement sur un lancement manuel, case cochée : un push ne peut jamais
+      # installer WordPress d'office sur une base qui serait vide par erreur.
+      PREMIERE_INSTALLATION: ${{ github.event_name == 'workflow_dispatch' && inputs.premiere_installation && '1' || '0' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Préparer l'accès SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          # `tr -d '\r'` : un secret posé depuis Windows arrive en CRLF et OpenSSH
+          # le refuse avec un « Permission denied » trompeur.
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          if ! ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null 2>&1; then
+            echo "::error::Le secret VPS_SSH_KEY n'est pas une clé privée valide (tronquée, clé .pub, ou fin de ligne manquante)."
+            exit 1
+          fi
+          printf '%s\n' "$KNOWN_HOSTS" | tr -d '\r' > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          printf '%s\n' \
+            "Host vps" \
+            "  HostName $VPS_HOST" \
+            "  User $VPS_USER" \
+            "  IdentityFile ~/.ssh/id_ed25519" \
+            "  StrictHostKeyChecking yes" \
+            "  BatchMode yes" \
+            > ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      # Le VPS ne contient aucun clone du dépôt : seulement le .env, uploads/,
+      # public/, et ces deux fichiers, réécrits à chaque déploiement.
+      - name: Téléverser le compose et le script de déploiement
+        run: |
+          scp deploy/alghazali-site.compose.yml vps:/opt/apps/alghazali-site/docker-compose.yml
+          scp deploy/deploy.sh vps:/opt/apps/alghazali-site/
+
+      # Jeton par STDIN (jamais en argument, visible dans `ps`), éphémère : il
+      # expire avec ce job, aucune clé GHCR permanente ne reste sur le serveur.
+      - name: Authentifier le VPS auprès de GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+        run: |
+          # shellcheck disable=SC2029  # développé ici, sur le runner, exprès
+          printf '%s' "$GHCR_TOKEN" | ssh vps "docker login ghcr.io -u '$GHCR_USER' --password-stdin"
+
+      - name: Déployer
+        run: |
+          # shellcheck disable=SC2029  # les variables du job partent au VPS par la ligne de commande
+          ssh vps "IMAGE='$IMAGE' IMAGE_TAG='$DEPLOY_TAG' UPDATE_DB='$UPDATE_DB' PREMIERE_INSTALLATION='$PREMIERE_INSTALLATION' bash /opt/apps/alghazali-site/deploy.sh"
+
+      - name: Retirer le jeton GHCR du serveur
+        if: always()
+        continue-on-error: true
+        run: ssh vps "docker logout ghcr.io"
+
+      - name: Résumé
+        if: always()
+        env:
+          RESULTAT: ${{ job.status }}
+        run: |
+          {
+            echo "### Déploiement de alghazali-institut.fr"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Image | \`$IMAGE:$DEPLOY_TAG\` |"
+            echo "| Commit | $GITHUB_SHA |"
+            echo "| Sauvegarde et schéma | $UPDATE_DB |"
+            echo "| Première installation | $PREMIERE_INSTALLATION |"
+            echo "| Résultat | $RESULTAT |"
+            echo ""
+            echo "Retour arrière : Actions > Déploiement > Run workflow,"
+            echo "image_tag = la version précédente (sha-…)."
+          } >> "$GITHUB_STEP_SUMMARY"

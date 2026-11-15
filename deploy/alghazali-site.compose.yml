@@ -1,0 +1,77 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Al Ghazzali Institut : alghazali-site (alghazali-institut.fr)
+#
+# Téléversé dans /opt/apps/alghazali-site/docker-compose.yml par la CI à chaque
+# déploiement (.github/workflows/deploy.yml), puis lancé par deploy.sh. Ne pas
+# le modifier sur le serveur : le prochain déploiement l'écraserait.
+#
+# L'image est construite par la CI et seulement tirée ici. Sur le serveur, il ne
+# reste que ce qui ne doit PAS être dans l'image :
+#   /var/www/alghazali-site/.env      secrets (créé par bootstrap-vps.sh, jamais touché par la CI)
+#   /var/www/alghazali-site/uploads   médias téléversés
+#   /var/www/alghazali-site/public    copie de l'arborescence publique, servie par le nginx de l'hôte
+#
+#   À la main :  cd /opt/apps/alghazali-site && IMAGE=ghcr.io/cnxsolutions/alghazali-institut IMAGE_TAG=sha-xxxxxxx docker compose up -d
+#   WP-CLI    :  docker exec -it alghazali-site-fpm wp …
+# (toute commande `docker compose` exige IMAGE et IMAGE_TAG, même `exec` ou
+# `logs` : compose interpole le fichier entier. `docker exec` s'en passe.)
+# ─────────────────────────────────────────────────────────────────────────────
+name: alghazali-site
+
+x-app: &app
+  # Obligatoires et sans valeur par défaut : un « :-latest » déploierait
+  # silencieusement autre chose que ce qui vient d'être vérifié.
+  image: "${IMAGE:?IMAGE manquant - ex. ghcr.io/cnxsolutions/alghazali-institut}:${IMAGE_TAG:?IMAGE_TAG manquant - ex. sha-a1b2c3d}"
+  restart: unless-stopped
+  user: "9007:9007"
+  init: true
+  # Chemin réel du code dans l'image ; /var/www/alghazali-site y est un lien
+  # vers lui (voir le Dockerfile), pour que le SCRIPT_FILENAME envoyé par nginx
+  # résolve. wp-cli.yml y désigne public/ comme racine de WordPress.
+  working_dir: /var/www/app
+  volumes:
+    - /var/www/alghazali-site/.env:/var/www/app/.env:ro
+    - /var/www/alghazali-site/uploads:/var/www/app/public/wp-content/uploads
+    # MySQL de l'hôte, par son socket : ni port réseau, ni accès depuis le
+    # réseau Docker. Le dossier entier et non le fichier, pour que le socket
+    # recréé par un redémarrage de MySQL reste visible.
+    - /var/run/mysqld:/var/run/mysqld
+  tmpfs:
+    # Fichiers téléversés en transit (20 Mo au plus), cache de WP-CLI.
+    - /tmp:mode=1777,size=64m
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  logging:
+    driver: json-file
+    options: { max-size: "20m", max-file: "5" }
+
+services:
+  fpm:
+    <<: *app
+    container_name: alghazali-site-fpm
+    # Plafonds : une app ne peut pas affamer les autres (VPS partagé, sans swap).
+    # pm.max_children (docker/www.conf) est dimensionné sur mem_limit.
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+    ports:
+      - "127.0.0.1:9007:9000"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  cron:
+    <<: *app
+    container_name: alghazali-site-cron
+    mem_limit: 256m
+    memswap_limit: 256m
+    cpus: 0.25
+    pids_limit: 64
+    # `wp cron event run --due-now` chaque minute ; WP-Cron est désactivé
+    # dans wp-config.php (DISABLE_WP_CRON). Voir docker/cron.sh.
+    command: ["cron.sh"]

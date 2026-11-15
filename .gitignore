@@ -1,9 +1,21 @@
-# Liste blanche : seuls le thème, l'extension de l'institut et les outils sont versionnés.
+# Liste blanche : seuls le thème, l'extension de l'institut, les outils et la chaîne de déploiement sont versionnés.
 # WordPress core, wp-config.php (secrets), uploads, autres extensions et .htaccess restent hors dépôt.
 /*
 !/.gitignore
 !/.gitattributes
 !/tools/
+
+# La chaîne de déploiement : l'image (Dockerfile, docker/, dont le wp-config.php
+# de production, sans secret), le serveur (deploy/), la CI (.github/), le test
+# de fumée (tests/) et leur documentation (docs/). Le wp-config.php de la
+# racine, celui du poste, reste exclu.
+!/.dockerignore
+!/Dockerfile
+!/docker/
+!/deploy/
+!/.github/
+!/tests/
+!/docs/
 
 !/wp-content/
 /wp-content/*
@@ -13,6 +25,18 @@
 !/wp-content/plugins/
 /wp-content/plugins/*
 !/wp-content/plugins/al-ghazzali-institut/
+!/wp-content/mu-plugins/
+/wp-content/mu-plugins/*
+!/wp-content/mu-plugins/alghazali-sante.php
+!/wp-content/mu-plugins/alghazali-smtp.php
+
+# Deuxième garde, à l'intérieur même des chemins autorisés : le dépôt est public.
+*.env
+.env*
+*.key
+*.pem
+*.sql
+*.sql.gz
 
 # Fichiers locaux
 .DS_Store
