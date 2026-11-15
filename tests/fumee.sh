@@ -285,8 +285,9 @@ ok "/up par cgi-fcgi, SCRIPT_FILENAME=/var/www/alghazali-site/public/index.php :
 CHEMINS="$(wp post list --post_type=page,ag_course --post_status=publish \
   --orderby=menu_order --order=ASC --posts_per_page=40 --field=url 2>/dev/null \
   | sed -E 's#^https?://[^/]+##' | grep -E '^/([a-z0-9][a-z0-9/-]*/)?$' || true)"
-[[ "$(grep -c . <<< "$CHEMINS")" -ge 5 ]] && grep -qx / <<< "$CHEMINS" \
-  || echec "pages relevées comme dans deploy.sh : $CHEMINS"
+if [[ "$(grep -c . <<< "$CHEMINS")" -lt 5 ]] || ! grep -qx / <<< "$CHEMINS"; then
+  echec "pages relevées comme dans deploy.sh : $CHEMINS"
+fi
 ok "pages relevées comme dans deploy.sh : $(grep -c . <<< "$CHEMINS") adresses, l'accueil en « / »"
 
 # ─────────────────────────────────────────────────────────────────────────────
